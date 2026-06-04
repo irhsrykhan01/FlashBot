@@ -139,8 +139,7 @@ const data = await response.json();
 document.getElementById("loading").remove();
 
 const reply =
-data.candidates?.[0]?.content?.parts?.[0]?.text
-|| "Tidak ada jawaban.";
+data.reply || "Tidak ada jawaban.";
 
 chat.innerHTML += `
 <div class="msg bot">${reply}</div>
