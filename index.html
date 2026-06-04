@@ -2,16 +2,16 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
-<title>AI Rashii</title>
+<title>⚡ FlashBot</title>
 
 <style>
 *{
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:Poppins,sans-serif;
+font-family:Arial,sans-serif;
 }
 
 body{
@@ -22,13 +22,12 @@ flex-direction:column;
 }
 
 header{
-padding:15px;
-text-align:center;
 background:#1e293b;
 color:white;
+padding:15px;
+text-align:center;
 font-size:22px;
 font-weight:bold;
-box-shadow:0 2px 10px rgba(0,0,0,.3);
 }
 
 #chat{
@@ -39,9 +38,9 @@ padding:15px;
 
 .msg{
 max-width:80%;
-padding:10px 14px;
-margin:8px 0;
+padding:12px;
 border-radius:15px;
+margin:8px 0;
 word-wrap:break-word;
 }
 
@@ -68,13 +67,13 @@ flex:1;
 padding:12px;
 border:none;
 border-radius:12px;
-outline:none;
 background:#1e293b;
 color:white;
+outline:none;
 }
 
 button{
-padding:12px 20px;
+padding:12px 18px;
 border:none;
 border-radius:12px;
 background:#2563eb;
@@ -83,19 +82,14 @@ cursor:pointer;
 }
 </style>
 </head>
-
 <body>
 
-<header>
-⚡FlashBot AI
-</header>
+<header>⚡ FlashBot</header>
 
 <div id="chat">
-
 <div class="msg bot">
-Halo! Aku AI Buatan Danz_kuyyy 👋
+Halo! Aku FlashBot 🚀
 </div>
-
 </div>
 
 <div class="bottom">
@@ -104,19 +98,77 @@ Halo! Aku AI Buatan Danz_kuyyy 👋
 </div>
 
 <script>
-function send(){
 
-let text=input.value;
+const chat=document.getElementById("chat");
+const input=document.getElementById("input");
+
+async function send(){
+
+const text=input.value.trim();
 
 if(!text) return;
 
-chat.innerHTML +=
-`<div class="msg user">${text}</div>`;
+chat.innerHTML += `
+<div class="msg user">${text}</div>
+`;
 
 input.value="";
 
+chat.innerHTML += `
+<div class="msg bot" id="loading">
+⌨️ FlashBot sedang mengetik...
+</div>
+`;
+
 chat.scrollTop=chat.scrollHeight;
+
+try{
+
+const response = await fetch("/api/chat",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+message:text
+})
+});
+
+const data = await response.json();
+
+document.getElementById("loading").remove();
+
+const reply =
+data.candidates?.[0]?.content?.parts?.[0]?.text
+|| "Tidak ada jawaban.";
+
+chat.innerHTML += `
+<div class="msg bot">${reply}</div>
+`;
+
 }
+catch(err){
+
+document.getElementById("loading").remove();
+
+chat.innerHTML += `
+<div class="msg bot">
+❌ Server belum terhubung.
+</div>
+`;
+
+}
+
+chat.scrollTop=chat.scrollHeight;
+
+}
+
+input.addEventListener("keypress",e=>{
+if(e.key==="Enter"){
+send();
+}
+});
+
 </script>
 
 </body>
