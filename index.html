@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
-<title>⚡ FlashBot</title>
+<title>⚡ FlashBot AI</title>
 
 <style>
 *{
@@ -82,14 +82,13 @@ cursor:pointer;
 }
 </style>
 </head>
+
 <body>
 
-<header>⚡ FlashBot</header>
+<header>⚡ FlashBot AI</header>
 
 <div id="chat">
-<div class="msg bot">
-Halo! Aku FlashBot 🚀
-</div>
+<div class="msg bot">Halo! Aku FlashBot 🚀</div>
 </div>
 
 <div class="bottom">
@@ -102,64 +101,55 @@ Halo! Aku FlashBot 🚀
 const chat=document.getElementById("chat");
 const input=document.getElementById("input");
 
+// 🔑 MASUKKAN API KEY OPENROUTER KAMU DI SINI
+const API_KEY = "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";
+
 async function send(){
 
 const text=input.value.trim();
-
 if(!text) return;
 
-chat.innerHTML += `
-<div class="msg user">${text}</div>
-`;
-
+chat.innerHTML += `<div class="msg user">${text}</div>`;
 input.value="";
 
-chat.innerHTML += `
-<div class="msg bot" id="loading">
-⌨️ FlashBot sedang mengetik...
-</div>
-`;
-
+chat.innerHTML += `<div class="msg bot" id="loading">⌨️ FlashBot sedang mengetik...</div>`;
 chat.scrollTop=chat.scrollHeight;
 
 try{
 
-const response = await fetch("/api/chat",{
+const res = await fetch("https://openrouter.ai/api/v1/chat/completions",{
 method:"POST",
 headers:{
+"Authorization":"Bearer "+API_KEY,
 "Content-Type":"application/json"
 },
 body:JSON.stringify({
-message:text
+model:"meta-llama/llama-3.1-8b-instruct:free",
+messages:[
+{role:"system",content:"Kamu adalah FlashBot AI yang pintar, ramah, dan cepat menjawab."},
+{role:"user",content:text}
+]
 })
 });
 
-const data = await response.json();
+const data = await res.json();
 
 document.getElementById("loading").remove();
 
-const reply =
-data.reply || "Tidak ada jawaban.";
+const reply = data.choices?.[0]?.message?.content || "Tidak ada jawaban.";
 
-chat.innerHTML += `
-<div class="msg bot">${reply}</div>
-`;
+chat.innerHTML += `<div class="msg bot">${reply}</div>`;
 
 }
 catch(err){
 
 document.getElementById("loading").remove();
 
-chat.innerHTML += `
-<div class="msg bot">
-❌ Server belum terhubung.
-</div>
-`;
+chat.innerHTML += `<div class="msg bot">❌ Error koneksi ke OpenRouter.</div>`;
 
 }
 
 chat.scrollTop=chat.scrollHeight;
-
 }
 
 input.addEventListener("keypress",e=>{
