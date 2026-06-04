@@ -23,11 +23,7 @@ export default async function handler(req, res) {
 
     console.log(JSON.stringify(data, null, 2));
 
-    return res.status(200).json({
-      reply:
-        data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-        "Gemini tidak mengembalikan jawaban."
-    });
+return res.status(200).json(data);
 
   } catch (err) {
 
